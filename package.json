@@ -1,0 +1,14 @@
+{
+  "name": "sponge",
+  "version": "0.0.1",
+  "description": "a request sponge",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jonathan Clem",
+  "license": "MIT",
+  "dependencies": {
+    "coffee-script": "~1.7.1"
+  }
+}

@@ -8,13 +8,12 @@ require('http').createServer(function(req, res) {
   req.on('end', end);
 
   function logRequest(data) {
+    data = data.length ? data : '{}';
+
     logger.log({ at: 'metadata', url: req.url, method: req.method });
     logger.log(extend({ at: 'headers' }, req.headers));
-
-    if (data.length) {
-      logger.log(extend({ at: 'body-parsed' }, JSON.parse(data)));
-      logger.log({ at: 'body-json', body: data.toString() });
-    }
+    logger.log(extend({ at: 'body-parsed' }, JSON.parse(data)));
+    logger.log({ at: 'body-json', body: data });
   }
 
   function end() {

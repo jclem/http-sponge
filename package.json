@@ -9,8 +9,12 @@
   },
   "author": "Jonathan Clem",
   "license": "MIT",
+  "repository": "https://github.com/jclem/http-sponge",
   "dependencies": {
     "logfmt": "~1.0.0",
-    "concat-stream": "~1.4.4"
+    "concat-stream": "~1.4.4",
+    "split": "~0.2.10",
+    "through": "~2.3.4",
+    "request": "~2.34.0"
   }
 }

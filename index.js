@@ -8,12 +8,23 @@ require('http').createServer(function(req, res) {
   req.on('end', end);
 
   function logRequest(data) {
-    data = data.length ? data : '{}';
+    var logData = {
+      ns: 'http-sponge',
+      url: req.url,
+      method: req.method
+    };
 
-    logger.log({ at: 'metadata', method: req.method });
-    logger.log(extend({ at: 'headers' }, req.headers));
-    logger.log(extend({ at: 'body-parsed' }, JSON.parse(data)));
-    logger.log({ at: 'body-json', body: data });
+    var body = JSON.parse(data.length ? data : '{}');
+
+    for (var key in req.headers) {
+      logData['http_sponge_header_' + key] = req.headers[key];
+    }
+
+    for (var key in body) {
+      logData['http_sponge_body_' + key] = body[key];
+    }
+
+    logger.log(logData);
   }
 
   function end() {

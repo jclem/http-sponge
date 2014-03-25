@@ -14,15 +14,8 @@ require('http').createServer(function(req, res) {
       method: req.method
     };
 
-    var body = JSON.parse(data.length ? data : '{}');
-
-    for (var key in req.headers) {
-      logData['http_sponge_header_' + key] = req.headers[key];
-    }
-
-    for (var key in body) {
-      logData['http_sponge_body_' + key] = body[key];
-    }
+    logData.headers = JSON.stringify(req.headers);
+    logData.body    = data.length ? data : '{}';
 
     logger.log(logData);
   }

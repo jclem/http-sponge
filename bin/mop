@@ -1,52 +1,31 @@
 #!/usr/bin/env node
 
-var exec    = require('child_process').exec;
 var logfmt  = require('logfmt');
 var request = require('request');
 var split   = require('split');
 var through = require('through');
 
-var ps           = exec('hk log -a http-sponge');
 var streamParser = logfmt.streamParser();
-var uuid         = process.argv[2];
-var port         = process.argv[3];
+var port         = process.argv[2];
 
-ps.stdout.pipe(split()).pipe(through(function(line) {
-  var data, requestData;
+process.stdin.pipe(split()).pipe(through(function(line) {
+  line = line.toString().split(/app\[.+\]: /)[1];
+  var data = logfmt.parse(line);
 
-  if (line.match(/app\[web\.\d+\]: /)) {
-    line = line.split(/app\[.+\]: /)[1];
-    data = logfmt.parse(line);
-
-    if (data.url && data.url.match(uuid)) {
-      requestData = normalizeRequest(data);
-      makeRequest(requestData);
-    }
+  if (data.url) {
+    data.headers = JSON.parse(data.headers);
+    data.body    = JSON.parse(data.body);
+    makeRequest(data);
   }
 }));
 
-function normalizeRequest(data) {
-  var requestData = {
-    headers: {},
-    body: {}
-  };
-
-  for (var key in data) {
-    if (key.match(/^http_sponge_header_/)) {
-      requestData.headers[key.split(/^http_sponge_header_/)[1]] = data[key];
-    } else if (key.match(/^http_sponge_body_/)) {
-      requestData.body[key.split(/^http_sponge_body_/)[1]] = data[key];
-    } else {
-      requestData[key] = data[key];
-    }
-  }
-
-  return requestData;
-}
-
 function makeRequest(data) {
+  delete data.headers.host;
+  delete data.headers['content-length'];
+
   request({
     url: 'http://localhost:' + port + data.url,
+    headers: data.headers,
     method: data.method,
     body: JSON.stringify(data.body)
   });

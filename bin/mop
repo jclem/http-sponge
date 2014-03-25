@@ -13,6 +13,8 @@ process.stdin.pipe(split()).pipe(through(function(line) {
   var data = logfmt.parse(line);
 
   if (data.url) {
+    logfmt.log(data);
+
     data.headers = JSON.parse(data.headers);
     data.body    = JSON.parse(data.body);
     makeRequest(data);
